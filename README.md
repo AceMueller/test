@@ -103,6 +103,12 @@ node scripts/smoke-test.mjs   # end-to-end: drives a running server over
                                # in another terminal first)
 ```
 
+## Deploying
+
+See [`deploy/README.md`](./deploy/README.md) — a VM works well (this app
+needs one persistent process, not a serverless/autoscaled setup); there's
+a cloud-init script that sets everything up automatically on first boot.
+
 ## Project layout
 
 ```
@@ -118,4 +124,5 @@ src/
   public/                        static frontend (no build step)
 test/                    unit tests
 scripts/smoke-test.mjs    end-to-end WS smoke test
+deploy/                   VM deployment (systemd unit, setup/cloud-init scripts)
 ```
