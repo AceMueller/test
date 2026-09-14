@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Drift</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="join-overlay">
+    <div class="join-card">
+      <h1>Drift</h1>
+      <p>Chat rooms that merge when topics converge, and fracture when they diverge.</p>
+      <input id="name-input" placeholder="Your name" maxlength="32" autocomplete="off" />
+      <button id="join-btn">Join the lobby</button>
+    </div>
+  </div>
+
+  <div id="app" hidden>
+    <header>
+      <h1>Drift</h1>
+      <div id="event-log" aria-live="polite"></div>
+    </header>
+    <div id="layout">
+      <aside id="room-list"></aside>
+      <main>
+        <div id="room-header"></div>
+        <div id="messages"></div>
+        <form id="chat-form">
+          <input id="chat-input" placeholder="Say something..." maxlength="500" autocomplete="off" />
+          <button type="submit">Send</button>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="client.js"></script>
+</body>
+</html>
