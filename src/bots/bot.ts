@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { World } from "../state.js";
 import type { EmbeddingProvider } from "../embeddings/index.js";
+import type { Message } from "../types.js";
 
 export interface Persona {
   id: string;
@@ -111,7 +112,7 @@ export class BotRunner {
     private readonly world: World,
     private readonly embeddings: EmbeddingProvider,
     private readonly generator: MessageGenerator,
-    private readonly onMessagePosted: () => void,
+    private readonly onMessagePosted: (roomId: string, message: Message) => void,
   ) {}
 
   spawnAll(personas: Persona[] = PERSONAS): void {
@@ -152,15 +153,18 @@ export class BotRunner {
     const text = await this.generator.generate(handle.persona, recentText);
     const embedding = await this.embeddings.embed(text);
 
-    this.world.addMessage(room.id, {
+    // A merge/fracture tick may have moved this participant elsewhere while we awaited above.
+    const current = this.world.participants.get(handle.participantId);
+    if (!current) return;
+    const message = this.world.addMessage(current.currentRoomId, {
       id: randomUUID(),
-      authorId: participant.id,
-      authorName: participant.name,
+      authorId: current.id,
+      authorName: current.name,
       authorType: "bot",
       text,
       embedding,
       ts: Date.now(),
     });
-    this.onMessagePosted();
+    if (message) this.onMessagePosted(current.currentRoomId, message);
   }
 }
