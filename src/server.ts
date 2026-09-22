@@ -13,6 +13,18 @@ import { ConnectionHub } from "./ws/handlers.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Defense in depth: a single bad request degrading to a logged error beats
+// the whole in-memory world (every room, every conversation) getting wiped
+// by a process crash + systemd restart. See ws/handlers.ts for the one
+// concrete crash this was written to catch (a malformed WS frame); this is
+// the backstop for anything else.
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception (continuing):", err);
+});
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled rejection (continuing):", err);
+});
+
 async function main(): Promise<void> {
   const port = Number(process.env.PORT ?? 3000);
   const tickMs = Number(process.env.TICK_MS ?? 4000);
