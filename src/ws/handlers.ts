@@ -47,13 +47,18 @@ export class ConnectionHub {
     participantId: string | undefined,
     setParticipantId: (id: string) => void,
   ): Promise<void> {
-    let msg: ClientMessage;
+    let parsed: unknown;
     try {
-      msg = JSON.parse(raw.toString());
+      parsed = JSON.parse(raw.toString());
     } catch {
       send(ws, { type: "error", message: "invalid message" });
       return;
     }
+    if (typeof parsed !== "object" || parsed === null || typeof (parsed as { type?: unknown }).type !== "string") {
+      send(ws, { type: "error", message: "invalid message" });
+      return;
+    }
+    const msg = parsed as ClientMessage;
 
     if (msg.type === "join") {
       const name = (msg.name ?? "").trim().slice(0, 32) || "Anonymous";
